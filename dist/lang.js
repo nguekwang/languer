@@ -46,7 +46,6 @@
   ];
   // Digits other than 0-9 (Intl numbering system), as in the profile site's data/site.yaml.
   var DIGITS = { fa: 'arabext' };
-  var PROFILE = 'https://nguekwang.github.io/{lang}/?ref=langlog';
   var ATTRS = ['placeholder', 'aria-label', 'title', 'alt'];
   var SKIP = 'script,style,code,.notranslate';
   var LOAD_WAIT = 3000;
@@ -263,13 +262,12 @@
     touched = [];
   }
 
+  // "yoshi" in the header (a.profile, written from tools/site_brand.py) links to the profile
+  // site's page in the interface language: only the language part of its address changes.
   function profileLinks() {
-    Array.prototype.forEach.call(
-      document.querySelectorAll('a[href^="https://nguekwang.github.io/"]'),
-      function (a) {
-        a.href = PROFILE.replace('{lang}', lang);
-      },
-    );
+    Array.prototype.forEach.call(document.querySelectorAll('a.profile'), function (a) {
+      a.href = a.href.replace(/^(https:\/\/[^/]+\/)[^/?#]+\//, '$1' + lang + '/');
+    });
   }
 
   function menu() {

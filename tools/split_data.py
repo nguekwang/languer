@@ -22,13 +22,19 @@ Run after prepare_static.py. check() rebuilds the objects the same way
 the browser does and fails if anything differs from the originals.
 """
 
-from pathlib import Path
 import json
+import re
 
-ROOT = Path(__file__).resolve().parent.parent
-DIST = ROOT / "dist"
+from locations import DIST
+
 OUT = DIST / "data"
-SHARDS = 64
+# The number of name files is set once, in dist/atlas-data.js (the browser must know it
+# before any data has loaded); read it from there so the two always agree.
+SHARDS = int(
+    re.search(
+        r"\bconst SHARDS\s*=\s*(\d+)", (DIST / "atlas-data.js").read_text(encoding="utf-8")
+    ).group(1)
+)
 # Glottolog record fields stored as columns, in the original key order.
 # id, children, root, size, wals and names are left out (see above).
 COLUMNS = ["name", "level", "area", "iso", "countries", "isolate", "parent", "category"]

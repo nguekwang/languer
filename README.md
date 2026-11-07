@@ -189,7 +189,7 @@ Syntax and DOM checks cover both list views, random selection, detail routes for
 The atlas and the record detail page (`record.html`) do not load the 30 MB `data.json` and `integrated.json`; those stay as downloads. `tools/split_data.py` writes smaller files to `dist/data/` (built by the Pages workflow, not committed), and `dist/atlas-data.js` rebuilds the same objects from them in the browser:
 
 - `data/atlas.json` (about 0.8 MB compressed): the tree, native names, sources, study trees and conflicts. Glottolog records are stored as columns, and values the browser can recompute (ids inside records, children, root, size, Glottolog assertions, placements) are left out.
-- `data/names/<n>.json`: recorded names and spellings, split into 64 files by a hash of the record id. A page loads one when it shows a record's names.
+- `data/names/<n>.json`: recorded names and spellings, split into `SHARDS` files (set in `dist/atlas-data.js`) by a hash of the record id. A page loads one when it shows a record's names.
 - `data/search.json`: the text of all recorded names. The atlas loads it after the tree is shown, so searching by an alternative name (for example 日本語) works a moment later than searching by name, Glottocode or ISO code.
 
 The WALS genus lists in `data.json` are not used by the pages and are not in these files. `tools/split_data.py` rebuilds the objects the same way and stops if anything differs from `data.json` and `integrated.json`.

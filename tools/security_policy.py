@@ -23,9 +23,9 @@ inline script, which the policy would block.
 
 import re
 import sys
-from pathlib import Path
 
-DIST = Path(__file__).resolve().parent.parent / "dist"
+from locations import DIST
+
 
 # A new script, style, image or connection source changes this list, in the
 # same pull request (research-aide .claude/rules/web-security.md).

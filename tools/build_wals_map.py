@@ -27,7 +27,6 @@ data-world that languoid_map.py computes for a whole-world map.
 Points are Glottolog's representative coordinates, not the area where a
 language is spoken.
 """
-from pathlib import Path
 import csv
 import hashlib
 import io
@@ -35,9 +34,9 @@ import json
 import sys
 import urllib.request
 
-from languoid_map import project, world_box, world_view
+from locations import ROOT
+from languoid_map import min_width, project, world_box, world_view
 
-ROOT = Path(__file__).resolve().parent.parent
 SRC = ROOT / "source-data" / "wals-features"
 OUT = ROOT / "dist" / "data" / "features"
 VERSION = "v2020.4"
@@ -131,7 +130,7 @@ def build():
         rows.append([r["ID"], r["Name"], fam, wals_codes.get(i, ""), round(x, 1), round(y, 1)])
     write(OUT / "languages.json", {"fields": ["glottocode", "name", "family", "wals", "x", "y"], "rows": rows})
     page = (ROOT / "dist" / "feature-map.html").read_text(encoding="utf-8")
-    for attr in (f'viewBox="{world_view()}"', f'data-world="{world_box()}"'):
+    for attr in (f'viewBox="{world_view()}"', f'data-world="{world_box()}"', f'data-min="{min_width()}"'):
         if attr not in page:
             raise SystemExit(f"dist/feature-map.html: the map must have {attr} (see languoid_map.py)")
 

@@ -66,7 +66,8 @@
         '">Return to the variant list</a>';
       return;
     }
-    document.title = n.name + ' · Lang Log by yoshi';
+    // Keep the title suffix record.html was written with (tools/site_brand.py).
+    document.title = n.name + document.title.slice(document.title.lastIndexOf(' · '));
     const url = (i) => 'record.html?domain=' + domain + '&id=' + encodeURIComponent(i),
       nl = (i) => (N[i] ? `<a href="${esc(url(i))}">${esc(N[i].name)}</a>` : esc(i)),
       sl = (s) =>

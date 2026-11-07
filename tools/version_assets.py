@@ -14,9 +14,9 @@ CI; the HTML files committed in dist/ keep plain links.
 
 import hashlib
 import re
-from pathlib import Path
 
-DIST = Path(__file__).resolve().parent.parent / "dist"
+from locations import DIST
+
 
 # href="..." or src="..." pointing at a relative .css, .js or .svg file,
 # with an optional #fragment (logo.svg#logo). Absolute URLs, data: URIs and

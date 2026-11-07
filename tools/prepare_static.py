@@ -1,10 +1,10 @@
 """Restore large static assets from their lossless, versioned archives."""
 
-from pathlib import Path
 import gzip
 import hashlib
 
-ROOT = Path(__file__).resolve().parent.parent
+from locations import ROOT
+
 ASSETS = [
     {
         "name": "data.json",

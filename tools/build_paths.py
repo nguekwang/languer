@@ -31,10 +31,11 @@ Run after prepare_static.py (it reads dist/data.json and dist/integrated.json).
   tree of its branch (dist/tree.js, drawn when the visitor asks for it) and
   the Hugging Face models (dist/hf-models.js).
 """
-from pathlib import Path
 from html import escape
 
+from locations import DIST, ROOT
 from security_policy import HEAD as SECURITY_HEAD
+from site_brand import TITLE_SUFFIX, by_yoshi
 import csv
 import json
 import re
@@ -44,17 +45,11 @@ import unicodedata
 
 from languoid_map import map_svg
 
-ROOT = Path(__file__).resolve().parent.parent
-DIST = ROOT / "dist"
 OUT = DIST
 # Top-level names in dist/ that a family or source slug must not take.
 RESERVED = {"map", "data", "i18n", "stats", "sources", "updates"}
 # Directories of earlier builds that no longer exist; removed on each run.
 OLD_DIRS = {"families"}
-TITLE_SUFFIX = " · Lang Log by yoshi"
-# "yoshi" in the header links to the owner's profile (the English page of the personal site),
-# tagged with ?ref=langlog so the profile site can tell where the visit came from.
-PROFILE_URL = "https://nguekwang.github.io/en/?ref=langlog"
 
 data = json.loads((DIST / "data.json").read_text(encoding="utf-8"))
 unified = json.loads((DIST / "integrated.json").read_text(encoding="utf-8"))
@@ -532,7 +527,7 @@ def page(depth, title, body):
             f"<title>{escape(title)}{TITLE_SUFFIX}</title>"
             f"<link rel=\"icon\" href=\"{up}favicon.svg\" type=\"image/svg+xml\"><link rel=\"apple-touch-icon\" href=\"{up}apple-touch-icon.png\">"
             f"<link rel=\"stylesheet\" href=\"{up}style.css\"><link rel=\"stylesheet\" href=\"{up}signs-and-scripts.css\"><link rel=\"stylesheet\" href=\"{up}record.css\"><script src=\"{up}theme.js\"></script><script src=\"{up}i18n.js\"></script><script src=\"{up}lang.js\"></script><script src=\"{up}map-zoom.js\" defer></script></head>"
-            f"<body class=\"variant-page\"><header><div class=\"brand\"><a class=\"home\" href=\"{up}\"><svg class=\"logo\" role=\"img\" aria-label=\"LANG LOG\"><use href=\"{up}logo.svg#logo\"/></svg></a> <span class=\"by\">by <a href=\"{PROFILE_URL}\" title=\"MATSUURA Yoshihiro\">yoshi</a></span></div></header>"
+            f"<body class=\"variant-page\"><header><div class=\"brand\"><a class=\"home\" href=\"{up}\"><svg class=\"logo\" role=\"img\" aria-label=\"LANG LOG\"><use href=\"{up}logo.svg#logo\"/></svg></a> {by_yoshi()}</div></header>"
             f"<main>{body}</main>{FOOTER}{page_scripts(up)}</body></html>")
 
 

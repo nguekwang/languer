@@ -7,6 +7,7 @@
 //   search()   -> {id: lower-case text of all its names}, for search
 // Glottolog records have no "names" until names(id) has loaded them.
 window.AtlasData = (() => {
+  // Number of name files; tools/split_data.py reads it from here.
   const SHARDS = 64,
     shardFiles = new Map();
   let nodes = null,

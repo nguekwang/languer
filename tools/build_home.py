@@ -38,21 +38,19 @@ drawn from dist/random.json, which this script writes (not committed):
 from html import escape
 import csv
 import re
-from pathlib import Path
 import datetime
 import json
 
+from locations import DIST
 import build_paths as bp
-from build_paths import PROFILE_URL
 from security_policy import HEAD as SECURITY_HEAD
+from site_brand import COPYRIGHT, HOME_TITLE, TITLE_SUFFIX, by_yoshi
 
 # TODO: sections planned for the top page, not built yet (owner, 2026-11-06):
 # - Data sources band: names (and logos only where each source's brand terms
 #   allow) of Glottolog, Hugging Face and the other inputs, headed "Data
 #   sources" so it does not read as a list of partners.
 # - Sponsors: a section for sponsors of Lang Log.
-
-DIST = Path(__file__).resolve().parent.parent / "dist"
 
 
 def random_pools():
@@ -262,16 +260,16 @@ def sub_page(slug, title, body, scripts=()):
     html = (
         '<!doctype html><html lang="en"><head><meta charset="utf-8">' + SECURITY_HEAD +
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
-        f'<title>{escape(title)}{bp.TITLE_SUFFIX}</title>'
+        f'<title>{escape(title)}{TITLE_SUFFIX}</title>'
         '<link rel="icon" href="../favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="../apple-touch-icon.png">'
         '<link rel="stylesheet" href="../style.css">'
         '<script src="../theme.js"></script><script src="../i18n.js"></script><script src="../lang.js"></script>'
         + "".join(f'<script src="../{escape(s)}"></script>' for s in scripts) +
         '</head><body class="info-page">\n'
-        '<header><div class="brand"><a class="home" href="../"><svg class="logo" role="img" aria-label="LANG LOG"><use href="../logo.svg#logo"/></svg></a> '
-        f'<span class="by">by <a href="{escape(PROFILE_URL)}" title="MATSUURA Yoshihiro">yoshi</a></span></div></header>\n'
+        '<header><div class="brand"><a class="home" href="../"><svg class="logo" role="img" aria-label="LANG LOG"><use href="../logo.svg#logo"/></svg></a> ' +
+        by_yoshi() + '</div></header>\n'
         f'<main class="info-main"><h1>{escape(title)}</h1>{body}</main>\n'
-        '<footer><span>© 2026 MATSUURA Yoshihiro. All rights reserved.</span></footer>\n'
+        f'<footer><span>{COPYRIGHT}</span></footer>\n'
         '</body></html>\n')
     (DIST / slug).mkdir(exist_ok=True)
     (DIST / slug / "index.html").write_text(html, encoding="utf-8")
@@ -286,19 +284,19 @@ def main():
         '<!doctype html><html lang="en"><head><meta charset="utf-8">' + SECURITY_HEAD +
         '<meta name="viewport" content="width=device-width,initial-scale=1">'
         f'<meta name="description" content="{escape(description)}">'
-        '<title>Lang Log by yoshi</title>'
+        f'<title>{HOME_TITLE}</title>'
         '<link rel="icon" href="favicon.svg" type="image/svg+xml"><link rel="apple-touch-icon" href="apple-touch-icon.png">'
         '<link rel="stylesheet" href="style.css">'
         '<script src="theme.js"></script><script src="i18n.js"></script><script src="lang.js"></script>'
         '<link rel="search" type="application/opensearchdescription+xml" title="Lang Log" href="opensearch.xml">'
         '</head><body class="home-page">\n'
-        '<header><div class="brand"><a class="home" href="./" aria-current="page"><svg class="logo" role="img" aria-label="LANG LOG"><use href="logo.svg#logo"/></svg></a> '
-        f'<span class="by">by <a href="{escape(PROFILE_URL)}" title="MATSUURA Yoshihiro">yoshi</a></span></div>'
+        '<header><div class="brand"><a class="home" href="./" aria-current="page"><svg class="logo" role="img" aria-label="LANG LOG"><use href="logo.svg#logo"/></svg></a> ' +
+        by_yoshi() + '</div>'
         '</header>\n'
         '<main class="home-main">'
         '<section class="home-intro">'
-        '<h1 class="home-logo"><svg class="logo" role="img" aria-label="LANG LOG"><use href="logo.svg#logo"/></svg></h1>'
-        f'<p class="home-by">by <a href="{escape(PROFILE_URL)}" title="MATSUURA Yoshihiro">yoshi</a></p>'
+        '<h1 class="home-logo"><svg class="logo" role="img" aria-label="LANG LOG"><use href="logo.svg#logo"/></svg></h1>' +
+        by_yoshi('p', 'home-by') +
         '<form class="home-search" action="./" method="get" role="search">'
         '<label class="visually-hidden" for="home-q">Search languages and families</label>'
         '<div class="search-pill">'
@@ -321,7 +319,7 @@ def main():
         '</ul></section></main>\n'
         f'<footer><span>Glottolog 5.3 + WALS + {st["summaryTrees"]} Phlorest summary trees · Retrieved {retrieved}</span>'
         '<span>Sources: Glottolog, WALS, published study trees and script catalogs, each under its own license</span>'
-        '<span>© 2026 MATSUURA Yoshihiro. All rights reserved.</span></footer>\n'
+        f'<span>{COPYRIGHT}</span></footer>\n'
         '<script src="home.js"></script><script src="atlas-data.js"></script><script src="lineage-paths.js"></script><script src="tree.js"></script>\n'
         '</body></html>\n'
     )

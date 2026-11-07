@@ -13,7 +13,6 @@ come from the page: the letters use currentColor and the asterisk uses the
 --teal custom property, so a light or dark theme on the page applies here too.
 """
 
-from pathlib import Path
 import math
 import re
 
@@ -21,8 +20,10 @@ from fontTools.pens.svgPathPen import SVGPathPen
 from fontTools.pens.transformPen import TransformPen
 from fontTools.ttLib import TTFont
 
+from locations import DIST
+
 FONT = "/usr/share/fonts/truetype/liberation/LiberationSans-Bold.ttf"
-OUT = Path(__file__).resolve().parent.parent / "dist" / "logo.svg"
+OUT = DIST / "logo.svg"
 CSS = OUT.with_name("style.css")  # its .logo rule carries the same aspect ratio
 TEXT = "LANG LOG"
 SIZE = 100  # font size in logo units

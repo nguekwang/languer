@@ -34,18 +34,6 @@
 (function () {
   'use strict';
   var TILE_BELOW = 700; // view width (SVG units) below which tiles are drawn
-  var LAYERS = [
-    ['sphere', 'lmap-sphere'],
-    ['land', 'lmap-land'],
-    ['borders', 'lmap-border'],
-    ['disputed', 'lmap-disputed'],
-  ];
-  var TILE_LAYERS = [
-    ['sea', 'lmap-sphere'],
-    ['land', 'lmap-land'],
-    ['borders', 'lmap-border'],
-    ['disputed', 'lmap-disputed'],
-  ];
   var STEP = 1.6; // zoom factor of one button press or key press
   var GLIDE_MS = 550; // length of the Reset animation
   var STEP_MS = 220; // length of the + / - animation
@@ -153,12 +141,12 @@
     var full = false,
       px = 1,
       pageW = 0;
-    var name = svg.getAttribute('data-map') || 'land';
-    var base = svg.getAttribute('data-base') || 'map/';
-    var minW = parseFloat(svg.getAttribute('data-min')) || 30;
-    var wb = (svg.getAttribute('data-world') || '-973.9 -973.9 1947.8 1947.8')
-      .split(' ')
-      .map(parseFloat);
+    // Sizes come only from the attributes languoid_map.py writes; a map without them is not mounted.
+    var name = svg.getAttribute('data-map');
+    var base = svg.getAttribute('data-base');
+    var minW = parseFloat(svg.getAttribute('data-min'));
+    var wb = (svg.getAttribute('data-world') || '').split(' ').map(parseFloat);
+    if (!name || base === null || !(minW > 0) || wb.length !== 4 || wb.some(isNaN)) return null;
     var world = { x: wb[0], y: wb[1], w: wb[2], h: wb[3] };
     var W = world.w;
     // The starting view may lie east of the 180th meridian (languoid_map.py keeps a group of
@@ -174,24 +162,35 @@
       bg = el('g', { 'class': 'lmap-bg' });
       svg.insertBefore(bg, svg.querySelector(':scope > use'));
     }
-    var hrefs = {};
+    // The layers, in the order the page draws them (LAYERS in languoid_map.py): each <use>
+    // names its file, its layer (#sphere, #land, ...) and its class. Copies of a layer share a class.
+    var layers = [],
+      seen = {};
     Array.prototype.forEach.call(
       svg.querySelectorAll(':scope > use, .lmap-bg > use'),
       function (u) {
-        hrefs[u.getAttribute('class')] = u.getAttribute('href').split('#')[0];
+        var cls = u.getAttribute('class'),
+          href = u.getAttribute('href').split('#');
+        if (!seen[cls]) {
+          seen[cls] = true;
+          layers.push({ file: href[0], id: href[1], cls: cls });
+        }
         u.parentNode.removeChild(u);
       },
     );
-    LAYERS.forEach(function (p) {
-      var href = hrefs[p[1]] || base + name + '.svg';
+    // Tiles (tools/build_land.py) hold the same layers, with the sea of the tile in place of the sphere.
+    var tileLayers = layers.map(function (p) {
+      return { id: p.id === 'sphere' ? 'sea' : p.id, cls: p.cls };
+    });
+    layers.forEach(function (p) {
       [-1, 0, 1].forEach(function (k) {
-        var u = el('use', { href: href + '#' + p[0], 'class': p[1] });
+        var u = el('use', { href: p.file + '#' + p.id, 'class': p.cls });
         if (k) u.setAttribute('x', k * W);
         bg.appendChild(u);
       });
     });
     var tiles = el('g', { 'class': 'lmap-tiles' });
-    TILE_LAYERS.forEach(function () {
+    tileLayers.forEach(function () {
       tiles.appendChild(el('g', {}));
     });
     // Tiles cover the whole world map under them, borders included, and carry their own.
@@ -342,8 +341,8 @@
             shown[key] = true;
             var href = base + 'tiles/' + name + '/' + id + '.svg';
             // One group per layer, so no tile's sea covers the edge of its neighbour's land.
-            TILE_LAYERS.forEach(function (p, i) {
-              var u = el('use', { href: href + '#' + p[0], 'class': p[1] });
+            tileLayers.forEach(function (p, i) {
+              var u = el('use', { href: href + '#' + p.id, 'class': p.cls });
               if (shift) u.setAttribute('x', shift);
               tiles.childNodes[i].appendChild(u);
             });

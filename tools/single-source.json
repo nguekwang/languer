@@ -1,0 +1,53 @@
+{
+  "_comment": "Read by tools/check_single_source.py. Each value is written once, in its source file; other files read it from there. See .claude/rules/readable-code.md.",
+  "values": [
+    {
+      "pattern": "https://nguekwang\\.github\\.io",
+      "source": "tools/site_brand.py",
+      "also": ["dist/*.html"],
+      "why": "the profile link; hand-written pages are kept equal by site_brand.py --check"
+    },
+    {
+      "pattern": "Lang Log by yoshi",
+      "source": "tools/site_brand.py",
+      "also": ["dist/*.html", "dist/i18n.js", "dist/i18n/*.js"],
+      "why": "the title suffix; dictionaries translate whole titles, hand-written pages are checked by site_brand.py --check"
+    },
+    {
+      "pattern": "All rights reserved",
+      "source": "tools/site_brand.py",
+      "also": ["dist/i18n.js", "dist/i18n/*.js"],
+      "why": "the copyright line"
+    },
+    {
+      "pattern": "\\bSHARDS\\s*=\\s*\\d",
+      "source": "dist/atlas-data.js",
+      "why": "the number of name files; tools/split_data.py reads it"
+    },
+    {
+      "pattern": "\\b973\\.9\\b|\\b1947\\.8\\b",
+      "source": "tools/languoid_map.py",
+      "also": ["dist/feature-map.html"],
+      "why": "the size of the world map; build_wals_map.py checks feature-map.html against languoid_map.py"
+    },
+    {
+      "pattern": "--stats-duration\\s*:",
+      "source": "dist/style.css",
+      "why": "the length of the Stats motion; dist/stats.js reads it"
+    },
+    {
+      "pattern": "Path\\(__file__\\)",
+      "source": "tools/locations.py",
+      "why": "where the repository is; scripts import ROOT and DIST"
+    }
+  ],
+  "colours": {
+    "_comment": "Colours are tokens in dist/style.css; other files use var(--...) or read the token. The files below draw files that are opened on their own, where the stylesheet does not apply.",
+    "source": "dist/style.css",
+    "also": {
+      "tools/build_land.py": "dist/map/*.svg opened on their own",
+      "tools/build_logo.py": "dist/logo.svg opened on its own",
+      "dist/tree.js": "the downloadable SVG of the tree"
+    }
+  }
+}

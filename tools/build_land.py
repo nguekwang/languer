@@ -30,10 +30,10 @@ import math
 import sys
 import urllib.request
 
+from locations import DIST, ROOT
 from languoid_map import MAX_LAT, project, WORLD_W
 
-ROOT = Path(__file__).resolve().parent.parent
-OUT = ROOT / "dist" / "map"
+OUT = DIST / "map"
 BASE_URL = "https://raw.githubusercontent.com/nvkelso/natural-earth-vector/v5.1.2/geojson/"
 SOURCES = {  # file name: SHA-256
     "ne_50m_land.geojson": "e874b27a51d146452be360cafb3cc50c86001074a67d534113e6534682f9826b",

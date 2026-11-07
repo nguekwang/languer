@@ -74,7 +74,7 @@ def unwrap(lons):
 
 ASPECT = 2.0  # width / height of every map
 MIN_W = 240.0  # smallest starting view, in SVG units (about 45 degrees of longitude at the equator)
-ZOOM_MIN_W = 30.0  # smallest view after zooming in (about 550 km across), see dist/map-zoom.js
+ZOOM_MIN_W = 30.0  # smallest view after zooming in (about 550 km across); written as data-min for dist/map-zoom.js
 PAD = 0.12  # margin around the points, as a share of their extent
 
 
@@ -181,8 +181,8 @@ def map_svg(
     land = escape(map_dir + "land.svg")
     parts = [
         f'<svg class="lmap" viewBox="{_num(vx)} {_num(vy)} {_num(vw)} {_num(vh)}" role="img" aria-label="{escape(label)}" preserveAspectRatio="xMidYMid meet" '
-        f'data-map="land" data-base="{escape(map_dir)}" data-min="{_num(ZOOM_MIN_W)}" '
-        f'data-world="{_num(-WORLD_W / 2)} {_num(-WORLD_H / 2)} {_num(WORLD_W)} {_num(WORLD_H)}">',
+        f'data-map="land" data-base="{escape(map_dir)}" data-min="{min_width()}" '
+        f'data-world="{world_box()}">',
         f"<title>{escape(label)}</title>",
         f'<g class="lmap-bg">{background(land, vx, vw)}</g>',
     ]
@@ -219,3 +219,8 @@ def world_view():
 def world_box():
     """data-world of every map: the square Web Mercator world."""
     return f"{_num(-WORLD_W / 2)} {_num(-WORLD_H / 2)} {_num(WORLD_W)} {_num(WORLD_H)}"
+
+
+def min_width():
+    """data-min of every map: the smallest view width after zooming in (ZOOM_MIN_W)."""
+    return _num(ZOOM_MIN_W)

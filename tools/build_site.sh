@@ -17,7 +17,8 @@ python3 tools/build_home.py
 # here).
 python3 tools/build_paths.py
 # Writes the small files the pages load (dist/data/, not committed):
-# the atlas tree, the search text and the names split into 64 files.
+# the atlas tree, the search text and the names split into SHARDS files
+# (the number is set in dist/atlas-data.js).
 python3 tools/split_data.py
 # Writes the language feature map's data (dist/data/features/, not
 # committed) from source-data/wals-features/, source-data/wals.csv and
@@ -74,3 +75,11 @@ grep -q 'href="style.css?v=' dist/index.html
 # inline style attribute or event handler that the policy would block
 # (.claude/rules/security.md).
 python3 tools/security_policy.py --check
+
+# The site name, the title suffix and the profile link come from
+# tools/site_brand.py; the hand-written pages must match it.
+python3 tools/site_brand.py --check
+# Each shared value is written in one place (.claude/rules/readable-code.md):
+# no copies of the values in tools/single-source.json, no colours outside the
+# tokens in dist/style.css, no constant defined twice with the same value.
+python3 tools/check_single_source.py
