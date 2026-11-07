@@ -1,4 +1,5 @@
-# Code quality checks: Prettier, ESLint and Ruff (npm run check; .claude/rules/code-quality.md).
+# Code quality checks: Prettier, ESLint and Ruff (npm run check; .claude/rules/code-quality.md),
+# one job per tool, so each shows as its own check and they run side by side.
 # Not triggered on its own: site.yml runs it before the build on every pull request and push to
 # main, and pages.yml runs it on the default branch before every deployment, so a failing check
 # stops both the preview and the live site.
@@ -13,7 +14,7 @@ on:
 permissions:
   contents: read
 jobs:
-  quality:
+  prettier:
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -25,22 +26,40 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
+      # Exact versions from package-lock.json; npm runs no install scripts. No dependency cache:
+      # pages.yml runs this before deploying, and the few packages install in seconds.
+      - run: npm ci --ignore-scripts
+      - run: npm run format:check
+  eslint:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+      - run: npm ci --ignore-scripts
+      - run: npm run lint:js
+  ruff:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref }}
+          persist-credentials: false
       - uses: actions/setup-python@v5
         with:
           python-version: "3.12"
-      # Exact versions from package-lock.json and requirements-dev.txt (with hashes); npm runs no
-      # install scripts. No dependency cache: pages.yml runs this before deploying, and the few
-      # packages install in seconds.
-      - run: npm ci --ignore-scripts
+      # Exact version and hashes from requirements-dev.txt; Ruff needs no Node.js packages.
       - run: python3 -m pip install --require-hashes -r requirements-dev.txt
-      - name: Prettier
-        run: npm run format:check
-      - name: ESLint
-        if: ${{ !cancelled() }}
-        run: npm run lint:js
       - name: Ruff lint
-        if: ${{ !cancelled() }}
-        run: npm run lint:python
+        run: ruff check .
       - name: Ruff format
         if: ${{ !cancelled() }}
-        run: npm run format:python:check
+        run: ruff format --check .
