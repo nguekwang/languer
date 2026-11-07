@@ -1,0 +1,63 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lang-log.github.io/schema/features.schema.json",
+  "title": "Lang Log feature catalogue",
+  "description": "Lang Log's own list of features (source-data/lang-log/features.json). Each feature has its own value ids; mappings say which feature and value of each source give them.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "features"],
+  "properties": {
+    "schema_version": { "type": "integer", "enum": [1] },
+    "features": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["id", "name", "area", "values", "mappings"],
+        "properties": {
+          "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+          "name": {
+            "type": "object",
+            "required": ["en"],
+            "additionalProperties": { "type": "string" }
+          },
+          "area": { "type": "string" },
+          "values": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["id", "name"],
+              "properties": {
+                "id": { "type": "string", "pattern": "^[a-z0-9]+(-[a-z0-9]+)*$" },
+                "name": {
+                  "type": "object",
+                  "required": ["en"],
+                  "additionalProperties": { "type": "string" }
+                }
+              }
+            }
+          },
+          "mappings": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["source", "feature", "url", "values"],
+              "properties": {
+                "source": { "type": "string" },
+                "feature": { "type": "string" },
+                "url": { "type": "string" },
+                "values": {
+                  "type": "object",
+                  "description": "Source value code -> Lang Log value id.",
+                  "additionalProperties": { "type": "string" }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

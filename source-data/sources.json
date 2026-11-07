@@ -1,0 +1,35 @@
+{
+  "note": "The sources Lang Log converts into its own data (tools/build_languoids.py). Files are kept as the source published them; to take in a new release, replace the files, update version and retrieved here, and run the build.",
+  "sources": [
+    {
+      "id": "glottolog",
+      "title": "Glottolog",
+      "version": "5.3",
+      "retrieved": "2026-10-12",
+      "license": "CC BY 4.0",
+      "url": "https://glottolog.org/",
+      "download": "https://github.com/glottolog/glottolog-cldf",
+      "files": ["languages.csv", "classification.nex", "dialects.md", "names.csv", "iso-map.json"]
+    },
+    {
+      "id": "wals",
+      "title": "WALS Online",
+      "version": "2020.4",
+      "retrieved": "2026-11-07",
+      "license": "CC BY 4.0",
+      "url": "https://wals.info/",
+      "download": "https://github.com/cldf-datasets/wals (cldf/, branch master)",
+      "citation": "Dryer, Matthew S. & Haspelmath, Martin (eds.) 2013. The World Atlas of Language Structures Online. Leipzig: Max Planck Institute for Evolutionary Anthropology.",
+      "files": ["wals.csv", "wals/values.csv", "wals/parameters.csv", "wals/codes.csv", "wals/chapters.csv", "wals/areas.csv"]
+    },
+    {
+      "id": "lang-log",
+      "title": "Lang Log",
+      "version": "1",
+      "license": "All rights reserved (see LICENSE)",
+      "url": "https://lang-log.github.io/",
+      "note": "Lang Log's own data: the feature catalogue (lang-log/features.json) and, later, values entered by the owner with their references.",
+      "files": ["lang-log/features.json"]
+    }
+  ]
+}

@@ -1,0 +1,206 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://lang-log.github.io/schema/languoid.schema.json",
+  "title": "Lang Log languoid",
+  "description": "One languoid of Lang Log. Lang Log does not sort languoids into families, languages, dialects or clades: every record has this one shape, and where it sits is its parent in each source. Whether a source calls it a family, language or dialect is that source's claim, kept as classification.<source>.level. Every value says which source and version it came from. The only labels Lang Log gives a languoid itself are its modality (spoken, signed, written) and whether it is constructed (an artificial or formal language); every languoid of every modality is in one tree.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "name",
+    "path",
+    "codes",
+    "names",
+    "classification",
+    "location",
+    "macroarea",
+    "countries",
+    "isolate",
+    "modality",
+    "constructed",
+    "features",
+    "sources"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "integer",
+      "enum": [1]
+    },
+    "id": {
+      "type": "string",
+      "description": "Glottocode, or <source>:<id in that source> for a record that exists only in another source."
+    },
+    "name": {
+      "type": "string"
+    },
+    "path": {
+      "type": "string",
+      "description": "URL path below https://lang-log.github.io/, without leading or trailing slash; a historical stage ends in #<anchor>."
+    },
+    "codes": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["glottocode", "iso639_3", "wals"],
+      "properties": {
+        "glottocode": {
+          "type": ["string", "null"]
+        },
+        "iso639_3": {
+          "type": ["string", "null"]
+        },
+        "wals": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "names": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["text", "lang", "provider", "same_language", "source"],
+        "properties": {
+          "text": {
+            "type": "string"
+          },
+          "lang": {
+            "type": "string",
+            "description": "Language tag of the name as the source gives it; empty when not given."
+          },
+          "provider": {
+            "type": "string"
+          },
+          "same_language": {
+            "type": "boolean",
+            "description": "The name is recorded in the language itself (its tag matches the record's ISO 639-3 code)."
+          },
+          "source": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "classification": {
+      "type": "object",
+      "description": "Place of this languoid in each source that classifies it: {<source>: {parent, level}}. parent is a Lang Log id or null (top of that source's tree); level is what that source calls it (Glottolog: family, language, dialect; WALS: family, subfamily, genus, language). The site nests languoids by Glottolog's parents.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["parent", "level"],
+        "properties": {
+          "parent": {
+            "type": ["string", "null"]
+          },
+          "level": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "location": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["latitude", "longitude", "source"],
+      "properties": {
+        "latitude": {
+          "type": "number"
+        },
+        "longitude": {
+          "type": "number"
+        },
+        "source": {
+          "type": "string"
+        }
+      }
+    },
+    "macroarea": {
+      "type": ["string", "null"]
+    },
+    "countries": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "isolate": {
+      "type": "boolean"
+    },
+    "modality": {
+      "type": "string",
+      "enum": ["spoken", "signed", "written"],
+      "description": "The physical medium: spoken (and its written use), signed, or a writing system."
+    },
+    "constructed": {
+      "type": "boolean",
+      "description": "An artificial or formal language (a conlang, a code, a programming or logical language)."
+    },
+    "features": {
+      "type": "object",
+      "description": "Values of Lang Log features (features/index.json), keyed by feature id. A feature without data is left out.",
+      "additionalProperties": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["value", "evidence"],
+        "properties": {
+          "value": {
+            "type": "string",
+            "description": "Lang Log value id, chosen from the evidence by source priority."
+          },
+          "disagreement": {
+            "type": "boolean",
+            "description": "Present and true when the evidence gives more than one value."
+          },
+          "evidence": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "additionalProperties": false,
+              "required": ["source", "version", "feature", "value", "raw"],
+              "properties": {
+                "source": {
+                  "type": "string"
+                },
+                "version": {
+                  "type": "string"
+                },
+                "feature": {
+                  "type": "string",
+                  "description": "Feature id in that source, such as WALS 81A."
+                },
+                "value": {
+                  "type": "string",
+                  "description": "Lang Log value id."
+                },
+                "raw": {
+                  "type": "string",
+                  "description": "The value as the source writes it."
+                },
+                "record": {
+                  "type": "string",
+                  "description": "The source's own id of the language the value was recorded for."
+                },
+                "reference": {
+                  "type": "string"
+                },
+                "comment": {
+                  "type": "string"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "sources": {
+      "type": "object",
+      "description": "Source id -> version of every source this record has data from.",
+      "additionalProperties": {
+        "type": "string"
+      }
+    }
+  }
+}

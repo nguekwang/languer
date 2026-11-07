@@ -3,10 +3,11 @@
 Two steps:
 
   python3 tools/build_wals_map.py --fetch
-      Downloads the feature values of WALS Online v2020.4 (CLDF, CC BY 4.0,
-      https://github.com/cldf-datasets/wals) and writes the three small tables
-      under source-data/wals-features/, which are committed. Run by hand only
-      when moving to a new WALS release; it needs network access.
+      Downloads the WALS Online v2020.4 tables (CLDF, CC BY 4.0,
+      https://github.com/cldf-datasets/wals) unchanged into source-data/wals/,
+      the one committed copy of WALS (listed in source-data/sources.json; also
+      read by tools/build_languoids.py). Run by hand only when moving to a new
+      WALS release; it needs network access.
 
   python3 tools/build_wals_map.py
       Reads those tables, source-data/languages.csv (Glottolog) and
@@ -30,7 +31,6 @@ language is spoken.
 from pathlib import Path
 import csv
 import hashlib
-import io
 import json
 import sys
 import urllib.request
@@ -38,7 +38,7 @@ import urllib.request
 from languoid_map import project, world_box, world_view
 
 ROOT = Path(__file__).resolve().parent.parent
-SRC = ROOT / "source-data" / "wals-features"
+SRC = ROOT / "source-data" / "wals"
 OUT = ROOT / "dist" / "data" / "features"
 VERSION = "v2020.4"
 BASE = f"https://raw.githubusercontent.com/cldf-datasets/wals/{VERSION}/cldf/"
@@ -69,21 +69,10 @@ def area(chapter):
 
 def fetch():
     SRC.mkdir(parents=True, exist_ok=True)
-    tables = {
-        "parameters.csv": ("ID", "Name", "Chapter_ID"),
-        "codes.csv": ("ID", "Parameter_ID", "Name", "Number"),
-        "values.csv": ("Language_ID", "Parameter_ID", "Value"),
-    }
-    for name, cols in tables.items():
+    for name in ("values.csv", "parameters.csv", "codes.csv", "chapters.csv", "areas.csv"):
         raw = urllib.request.urlopen(BASE + name, timeout=120).read()
-        rows = csv.DictReader(io.StringIO(raw.decode("utf-8")))
-        out = SRC / name
-        with out.open("w", encoding="utf-8", newline="") as f:
-            w = csv.writer(f, lineterminator="\n")
-            w.writerow(cols)
-            for r in rows:
-                w.writerow([r[c] for c in cols])
-        print(f"Wrote {out.relative_to(ROOT)} from {VERSION} (source SHA-256 {hashlib.sha256(raw).hexdigest()[:16]})")
+        (SRC / name).write_bytes(raw)
+        print(f"Wrote {(SRC / name).relative_to(ROOT)} from {VERSION} (SHA-256 {hashlib.sha256(raw).hexdigest()[:16]})")
 
 
 def build():
